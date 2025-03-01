@@ -1,19 +1,32 @@
 import os
+import sys
 import shutil
 import tempfile
 import subprocess
 from getpass import getpass
 import argparse
 
+def szedit_print(*args, **kwargs):
+    print("[7z-edit]", *args, **kwargs)
+def szedit_input(prompt):
+    return input("[7z-edit] " + prompt)
+def szedit_getpass(prompt):
+    return getpass("[7z-edit] " + prompt)
+def szedit_exception(text, e = None):
+    e_text = f"[7z-edit] Exception: {text}"
+    if e: e_text += f" Details:\n{e}"
+    return Exception(e_text)
+
 def check_executable(executable):
-    result = subprocess.run(["where", executable], capture_output=True, text=True)
-    if result.returncode != 0:
-        raise Exception(f"Error: {executable} is not installed or not in the PATH.")
+    try:
+        subprocess.run([executable, "-h"], capture_output=True, check=True)
+    except Exception as e:
+        raise Exception(f"{executable} is not installed or not in the PATH. Excecption: {e}")
 
 def cleanup(temp_folder):
     if os.path.exists(temp_folder):
         shutil.rmtree(temp_folder)
-        print(f"Cleanup successful. Temporary folder {temp_folder} has been removed.")
+        szedit_print(f"Cleanup successful. Temporary folder {temp_folder} has been removed.")
 
 def open_explorer(path):
     try:
@@ -27,75 +40,84 @@ def open_explorer(path):
         else:
             raise Exception("Unsupported OS.")
     except Exception as e:
-        print(f"Error: Failed to open the folder. Please open it manually at {path}. Exception: {e}")
+        szedit_print(f"Failed to open the folder. Please open it manually at {path}.\nException: {e}")
 
 def main():
-    parser = argparse.ArgumentParser(description="Edit a compressed file.")
-    parser.add_argument("zip_file", help="The zip file to edit.")
-    parser.add_argument("-o", "--output", help="The name of the output file. If not specified, the output filename will be the same as the input file with '_edited' appended.", default=None)
+    try:
+        parser = argparse.ArgumentParser(description="Edit or create a compressed file.")
+        parser.add_argument("-i", "--input", help="Path to the input file. If not specified, will create a  new file.", default=None)
+        parser.add_argument("-o", "--output", help="Path to the output file. If not specified, the output filename will be the same as the input file with '_edited' appended.", default=None)
 
-    args = parser.parse_args()
-    zip_file = args.zip_file
+        args = parser.parse_args()
+        input_file = args.input
+        output_file = args.output
     
-    if not os.path.exists(zip_file):
-        print(f"Error: The file {zip_file} does not exist.")
-        return
+        if not input_file and not output_file:
+            raise Exception(szedit_exception("At least one of the input file or the output file must be specified."))
     
-    password = getpass("Enter the password for decryption and encryption (leave blank if none): ")
-    
-    new_zip_file = args.output if args.output else f"{os.path.splitext(zip_file)[0]}_edited{os.path.splitext(zip_file)[1]}"
+        if input_file:
+            if not os.path.exists(input_file):
+                raise Exception(szedit_exception(f"The input file {input_file} does not exist."))
+            if not output_file:
+                output_file = f"{os.path.splitext(input_file)[0]}_edited{os.path.splitext(input_file)[1]}"
+
+    except Exception as e:
+        print(e)
+        sys.exit(1)
+
+    password = ""
     
     try:
         temp_folder = tempfile.mkdtemp()
-        print(f"Working in temporary folder: {temp_folder}")
+        szedit_print(f"Working in temporary folder: {temp_folder}")
         
         check_executable("7z")
         
-        unzip_result = subprocess.run(["7z", "x", f"-p{password}", zip_file, f"-o{temp_folder}"])
-        if unzip_result.returncode != 0:
-            raise Exception("Error: Extraction failed. Please check the password and try again.")
+        if input_file:
+            password = szedit_getpass("Enter the password for decryption and encryption (leave blank if none): ")
+            try:
+                subprocess.run(["7z", "x", f"-p{password}", input_file, f"-o{temp_folder}"], check=True)
+            except Exception as e:
+                raise szedit_exception("Decryption failed. Please check the password and try again.", e)
         
-        print("Please edit the files in the temporary folder.")
+        szedit_print("Please edit the files in the temporary folder.")
         open_explorer(temp_folder)
         
-        # Wait for the user to finish editing the files
-        # Meanwhile, the user have the following options:
-        # 1. Enter wq to save and exit
-        # 2. Enter q to exit without saving
-        # 3. Enter p to reset the password 
         while True:
-            print("Enter 'wq' to save and exit, 'q' to exit without saving, 'p' to reset the password")
-            user_input = input(":").strip().lower()
+            szedit_print("Enter 'wq' to save and exit, 'q' to exit without saving, 'p' to reset the password")
+            user_input = szedit_input(":").strip().lower()
             if user_input == 'wq':
-                print(f"Compressing the updated files into {new_zip_file}...")
-                zip_command = ["7z", "a", new_zip_file, f"{temp_folder}/*"]
+                szedit_print(f"Compressing the updated files into {output_file}...")
+                zip_command = ["7z", "a", output_file, f"{temp_folder}/*"]
                 if password:
                     zip_command.insert(2, f"-p{password}")
-                zip_result = subprocess.run(zip_command)
-                if zip_result.returncode != 0:
-                    raise Exception("Error: Zipping failed.")
-                print(f"Process completed successfully. The updated file is {new_zip_file}.")
+                
+                try:
+                    subprocess.run(zip_command, check=True)
+                except Exception as e:
+                    raise szedit_exception("Zipping failed.", e)
+                szedit_print(f"Process completed successfully. The updated file is {output_file}.")
                 break
             elif user_input == 'q':
-                print("Exiting without saving.")
+                szedit_print("Exiting without saving.")
                 break
             elif user_input == 'p':
-                password_new = getpass("Enter the new password (leave blank to remove the password): ")
-                # enter the new password again to confirm
-                password_confirm = getpass("Enter the new password again: ")
+                password_new = szedit_getpass("Enter the new password (leave blank to remove the password): ")
+                password_confirm = szedit_getpass("Enter the new password again: ")
                 if password_new == password_confirm:
                     password = password_new
-                    print("Password has been reset.")
+                    szedit_print("Password has been reset.")
                 else:
-                    print("Passwords do not match. Please try again.")
+                    szedit_print("Passwords do not match. Please try again.")
             else:
-                print("Invalid input. Please try again.")
+                szedit_print("Invalid input. Please try again.")
     
     except Exception as e:
-        print(e)    
-    
-    finally:
+        print(e)
         cleanup(temp_folder)
+        sys.exit(1)
+    
+    cleanup(temp_folder)
 
 if __name__ == "__main__":
     main()
