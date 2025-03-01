@@ -9,6 +9,8 @@ A simple command line tool to ease the cumbersome process of editing the content
 - 7-Zip installed and added to the system PATH
 - (Optional) Python 3.x if you wish to run the script directly
 
+Developed on Windows 11 with Python 3.13.2 and 7-Zip 22.00. Windows executables are provided in releases. Should work on other platforms as well, but this is not tested.
+
 ## Usage
 
 ```sh
