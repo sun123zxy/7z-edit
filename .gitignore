@@ -1,0 +1,45 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.swp
+
+# Compressed files
+*.zip
+*.7z
+*.tar.gz
+*.rar
+
+# Temporary folders
+temp/
+tmp/
+*.tmp/
+
+# Output files
+*.out
+*.o
+*.a
+*.so
+
+# Virtual environment
+venv/
+.env/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# IDE files
+.idea/
+.vscode/
+
+# pyinstaller
+dist/
+build/
+*.spec
+.exe
