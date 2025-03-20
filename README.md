@@ -2,7 +2,7 @@
 
 ## Description
 
-A simple command line tool to ease the cumbersome process of editing a (possibly encrypted) compressed file. Should work on any compressed file format supported by 7-Zip.
+A command line tool to ease the editing of password-protected compressed files. 
 
 ## Requirements
 
@@ -14,14 +14,18 @@ Developed on Windows 11 with Python 3.13.2 and 7-Zip 22.00. Windows executables 
 ## Usage
 
 ```default
-usage: 7z-edit [-h] [-i INPUT] [-o OUTPUT]
+usage: 7z-edit [-h] [-i INPUT] [-o OUTPUT] [-l [LOG]] [filename]
 
 Edit or create a compressed file.
 
+positional arguments:
+  filename             Alias for -i option.
+
 options:
   -h, --help           show this help message and exit
-  -i, --input INPUT    Path to the input file. If not specified, will start from scratch.
-  -o, --output OUTPUT  Path to the output file. If not specified, the output filename will be the same as the input file with '_edited' appended.
+  -i, --input INPUT    Path to the input file. If not specified, will create a new file.
+  -o, --output OUTPUT  Path to the output file. If not specified, overwrite the original file.
+  -l, --log [LOG]      Path to the log file. Disabled by default.
 ```
 
 ## Instructions
@@ -37,7 +41,6 @@ options:
 
 - Ensure that 7-Zip is installed and added to the system PATH.
 - The temporary folder will be cleaned up automatically after the process is completed.
-- Both the script and this README are written in collaboration with Github Copilot. Be aware of potential errors or inaccuracies.
 
 ## License
 
