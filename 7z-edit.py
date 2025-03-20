@@ -65,7 +65,6 @@ def main():
     # --- Parse arguments ---
     try:
         args = parser.parse_args()
-        print(type(args.log), args.log)
         if args.input and args.filename:
             raise Exception("Please provide either a filename or -i option, not both.")
         input_file = args.input or args.filename
