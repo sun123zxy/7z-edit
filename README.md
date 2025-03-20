@@ -41,6 +41,7 @@ options:
 
 - Ensure that 7-Zip is installed and added to the system PATH.
 - The temporary folder will be cleaned up automatically after the process is completed.
+- Log files store the output of the 7-Zip command. Useful for debugging.
 
 ## License
 

@@ -95,13 +95,14 @@ def main():
 
     # --- Main process ---
     try:
-        f = open(log_file, "a") if log_file else None
-
         # --- Create a temporary folder ---
         temp_input_folder = tempfile.mkdtemp()
         temp_output_folder = tempfile.mkdtemp()
         temp_output_file = os.path.join(temp_output_folder, os.path.basename(output_file))
-    
+        
+        # --- handle log file ---
+        f = open(log_file, "a") if log_file else open(os.path.join(temp_output_folder, "7z-edit.log"), "a") # output to nowhere if log_file is None
+
         # --- Decompress the input file ---
         password = ""
         if input_file:
