@@ -55,8 +55,11 @@ def try_open_explorer(path):
 
 def main():
 
-    # --- Setup argument parser ---
-    parser = argparse.ArgumentParser(description="Edit or create a compressed file.", exit_on_error=False)
+    # --- Setup argument parser ---=
+    parser = argparse.ArgumentParser(
+        prog="7z-edit",
+        description="Edit or create a compressed file.",
+        exit_on_error=False)
     parser.add_argument("filename", nargs="?", help="Alias for -i option.")
     parser.add_argument("-i", "--input", help="Path to the input file. If not specified, will create a new file.", default=None)
     parser.add_argument("-o", "--output", help="Path to the output file. If not specified, overwrite the original file.", default=None)

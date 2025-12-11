@@ -19,7 +19,7 @@ jobs:
       - name: Create Executable
         uses: sayyid5416/pyinstaller@v1
         with:
-          python_ver: '3.10'
+          python_ver: '3.14'
           spec: '7z-edit.py'
           upload_exe_with_name: '7z-edit.exe'
           options: --onefile

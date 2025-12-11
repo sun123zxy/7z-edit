@@ -27,7 +27,7 @@ tmp/
 *.so
 
 # Virtual environment
-venv/
+.venv/
 .env/
 
 # System files

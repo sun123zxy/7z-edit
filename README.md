@@ -2,14 +2,22 @@
 
 ## Description
 
-A command line tool to ease the editing of password-protected compressed files. 
+Temporarily decrypt, checkout, edit, encrypt and rewrite a compressed file with ease.
 
-## Requirements
+## Installation
 
 - 7-Zip installed and added to the system PATH
-- (Optional) Python 3.x if you wish to run the script directly
+- Python if you wish to run the script directly
 
-Developed on Windows 11 with Python 3.13.2 and 7-Zip 22.00. Windows executables are provided in releases. Should work on other platforms as well, but this is not well-tested.
+It's a standalone script / executable, so no installation is necessary.
+
+### Register to Context Menu
+
+On Windows, you can register or unregister 7z-edit to appear in the right-click context menu via executing the provided `.reg` file.
+
+Add 7z-edit to your system PATH before doing so.
+
+After registration, you can right-click any file and select "Edit with 7z-edit" to open it with the tool (with default parameters).
 
 ## Usage
 

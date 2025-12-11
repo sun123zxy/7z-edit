@@ -1,0 +1,8 @@
+Windows Registry Editor Version 5.00
+
+; Add 7z-edit to context menu for 7z files
+[HKEY_CLASSES_ROOT\*\shell\7z-edit]
+@="Edit with 7z-edit"
+
+[HKEY_CLASSES_ROOT\*\shell\7z-edit\command]
+@="cmd /K 7z-edit \"%1\""
