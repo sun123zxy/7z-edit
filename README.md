@@ -22,33 +22,37 @@ After registration, you can right-click any file and select "Edit with 7z-edit" 
 ## Usage
 
 ```default
-usage: 7z-edit [-h] [-i INPUT] [-o OUTPUT] [-l [LOG]] [filename]
+usage: 7z-edit [-h] [-l [LOG]] filename
 
 Edit or create a compressed file.
 
 positional arguments:
-  filename             Alias for -i option.
+  filename             Path to the file to edit. Non-existent file will be created.
 
 options:
   -h, --help           show this help message and exit
-  -i, --input INPUT    Path to the input file. If not specified, will create a new file.
-  -o, --output OUTPUT  Path to the output file. If not specified, overwrite the original file.
   -l, --log [LOG]      Path to the log file. Disabled by default.
 ```
 
 ## Instructions
 
-1. Run the script with the input file you want to edit.
+1. Run the script with the file you want to edit.
 2. Enter the password for decryption and encryption when prompted (leave blank if none).
 3. The script will extract the contents to a temporary folder.
 4. Edit the files in the temporary folder.
-5. Enter `wq` to save and exit, `q` to exit without saving, `p` to reset the password, or `mv` rename.
+5. Enter `wq` to save and exit, `q` to exit without saving, `p` to reset the password, `mv` to rename.
 
 ## Notes
 
 - Ensure that 7-Zip is installed and added to the system PATH.
 - The temporary folder will be cleaned up automatically after the process is completed.
 - Log files store the output of the 7-Zip command. Useful for debugging.
+
+## Packing
+
+```bash
+pyinstaller --onefile --name 7z-edit 7z-edit.py
+```
 
 ## License
 

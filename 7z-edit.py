@@ -60,36 +60,20 @@ def main():
         prog="7z-edit",
         description="Edit or create a compressed file.",
         exit_on_error=False)
-    parser.add_argument("filename", nargs="?", help="Alias for -i option.")
-    parser.add_argument("-i", "--input", help="Path to the input file. If not specified, will create a new file.", default=None)
-    parser.add_argument("-o", "--output", help="Path to the output file. If not specified, overwrite the original file.", default=None)
+    parser.add_argument("filename", help="Path to the file to edit. Non-existent file will be created.")
     parser.add_argument("-l", "--log", nargs="?", const="7z-edit.log", help="Path to the log file. Disabled by default.")
     
     # --- Parse arguments ---
     try:
         args = parser.parse_args()
-        if args.input and args.filename:
-            raise Exception("Please provide either a filename or -i option, not both.")
-        input_file = args.input or args.filename
-        output_file = args.output
-        if not input_file and not output_file:
-            raise Exception("At least one of the input file or the output file must be specified.")
+        input_file = args.filename
+        output_file = args.filename
         log_file = args.log
     except Exception as e:
         print(SZEditException("Error parsing arguments.", e))
         sys.exit(1)
     
     try:
-        # --- Interpret arguments ---
-        if input_file:
-            # --- Check if the input file exists ---
-            if not os.path.exists(input_file):
-                raise SZEditException(f"The input file {input_file} does not exist.")
-            # --- Set the output file ---
-            if not output_file:
-                output_file = input_file
-                szedit_print(f"Output file is not specified. Will overwrite the input file.")
-        
         # --- Check if 7z is installed ---
         check_executable("7z")
     except Exception as e:
@@ -107,7 +91,7 @@ def main():
 
         # --- Decompress the input file ---
         password = ""
-        if input_file:
+        if os.path.exists(input_file):
             password = szedit_getpass("Enter the password for decryption and encryption (leave blank if none): ")
             try:
                 unzip_command = ["7z", "x", "-y", f"-p{password}", input_file, f"-o{temp_input_folder}"]
@@ -116,7 +100,7 @@ def main():
                 raise SZEditException("Decompression failed. Check your password or the file integrity.", e)
             szedit_print("Decompression complete.")
         else:    
-            szedit_print("No input file specified. Initialize with an empty folder.")
+            szedit_print("Input file does not exist. Initialize with an empty folder.")
     
         # --- Try open the folder in file explorer ---
         szedit_print(f"Please edit the files in the temporary folder {temp_input_folder}...")
@@ -147,6 +131,15 @@ def main():
                     raise SZEditException("Failed to move the output file.", e)
                 
                 szedit_print(f"Process complete. The updated file is {output_file}.")
+                
+                # --- Delete the input file if it's different from the output file ---
+                if input_file != output_file:
+                    try:
+                        os.remove(input_file)
+                        szedit_print(f"Deleted the original input file {input_file}.")
+                    except Exception as e:
+                        szedit_print(f"Warning: Failed to delete the input file {input_file}. {str(e)}")
+                
                 break
 
             # --- Exit without saving ---
