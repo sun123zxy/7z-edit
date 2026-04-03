@@ -42,8 +42,7 @@ options:
 2. Enter the password for decryption and encryption when prompted (leave blank if none).
 3. The script will extract the contents to a temporary folder.
 4. Edit the files in the temporary folder.
-5. Enter `wq` to save and exit, `q` to exit without saving, or `p` to reset the password.
-6. If `wq` is entered, the script will compress (and encrypt) the updated files into the specified output file.
+5. Enter `wq` to save and exit, `q` to exit without saving, `p` to reset the password, or `mv` rename.
 
 ## Notes
 

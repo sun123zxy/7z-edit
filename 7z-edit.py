@@ -101,7 +101,6 @@ def main():
         # --- Create a temporary folder ---
         temp_input_folder = tempfile.mkdtemp()
         temp_output_folder = tempfile.mkdtemp()
-        temp_output_file = os.path.join(temp_output_folder, os.path.basename(output_file))
         
         # --- handle log file ---
         f = open(log_file, "a") if log_file else open(os.path.join(temp_output_folder, "7z-edit.log"), "a") # output to nowhere if log_file is None
@@ -125,12 +124,13 @@ def main():
     
         # --- Wait for user to finish editing ---
         while True:
-            szedit_print("Enter 'wq' to save and exit, 'q' to exit without saving, 'p' to reset the password")
+            szedit_print("Enter 'wq' to save and exit, 'q' to exit without saving, 'p' to reset the password, 'mv' to rename")
             user_input = szedit_input(":").strip().lower()
 
             # --- Save and exit ---
             if user_input == 'wq': 
                 # --- Zip the files ---
+                temp_output_file = os.path.join(temp_output_folder, os.path.basename(output_file))
                 szedit_print(f"Compressing the updated files into a temporary file {temp_output_file}...")
                 try:
                     zip_command = ["7z", "a", temp_output_file, f"{temp_input_folder}/*"]
@@ -163,6 +163,15 @@ def main():
                     szedit_print("The password has been reset.")
                 else:
                     szedit_print("New passwords do not match. The password has not been reset. Please try again.")
+
+            # --- Change the output file name ---
+            elif user_input == 'mv':
+                new_output_file = szedit_input(f"Enter the new output file path (current: {output_file}): ").strip()
+                if new_output_file:
+                    output_file = new_output_file
+                    szedit_print(f"The output file has been changed to {output_file}.")
+                else:
+                    szedit_print("Output file unchanged.")
 
             # --- Invalid input ---
             else:
